@@ -1,4 +1,13 @@
 name: CI
+on:
+  push:
+    branches: [ main, dev, qa, "**" ]
+on:
+  push:
+    branches: [ main, dev, qa ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
 
 on:
   pull_request:
