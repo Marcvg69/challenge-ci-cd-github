@@ -1,3 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.streamlit/
+.pytest_cache/
+coverage.xml
+build.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

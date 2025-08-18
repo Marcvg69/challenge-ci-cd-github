@@ -1,0 +1,76 @@
+name: CD
+
+on:
+  push:
+    branches: [ dev, qa, main ]   # deploy per branch (must-have)
+  workflow_dispatch: {}
+
+jobs:
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    environment: dev              # GitHub Environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set APP_ENV
+        run: echo "APP_ENV=dev" >> $GITHUB_ENV
+      - name: Install minimal deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+      - name: Package build (simulated)
+        run: |
+          echo "Dev build at $(date -u)" > build.txt
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-dev-${{ github.sha }}
+          path: build.txt
+      - name: Deploy step (simulated)
+        run: echo "🚀 Deployed to 'dev'"
+
+  deploy-qa:
+    if: github.ref == 'refs/heads/qa'
+    runs-on: ubuntu-latest
+    environment: qa               # GitHub Environment: qa
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set APP_ENV
+        run: echo "APP_ENV=qa" >> $GITHUB_ENV
+      - name: Install minimal deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+      - name: Package build (simulated)
+        run: |
+          echo "QA build at $(date -u)" > build.txt
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-qa-${{ github.sha }}
+          path: build.txt
+      - name: Deploy step (simulated)
+        run: echo "🚀 Deployed to 'qa'"
+
+  deploy-prod:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: prod             # Require approval in repo Settings → Environments
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set APP_ENV
+        run: echo "APP_ENV=prod" >> $GITHUB_ENV
+      - name: Install minimal deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+      - name: Package build (simulated)
+        run: |
+          echo "Prod build at $(date -u)" > build.txt
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-prod-${{ github.sha }}
+          path: build.txt
+      - name: Deploy step (simulated)
+        run: echo "🚀 Deployed to 'prod'"

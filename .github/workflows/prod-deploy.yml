@@ -1,0 +1,85 @@
+# .github/workflows/prod-deploy.yml
+# 5) Production deploy (protected by an Environment and manual approval)
+name: CD to Prod
+
+on:
+  # Manual run with a version input
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g., v1.2.3)"
+        required: true
+  # Or auto-run on release tags if you like
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+  id-token: write   # useful for cloud OIDC later
+
+concurrency:
+  group: cd-prod
+  cancel-in-progress: false
+
+env:
+  APP_NAME: demo-app
+
+jobs:
+  deploy:
+    # This is the protected environment; require approval in GitHub Settings
+    environment:
+      name: production
+      # Optional: add a public URL once you actually host somewhere
+      url: https://example.com
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tooling (optional)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+
+      - name: Verify secret exists (demo)
+        env:
+          FAKE_API_KEY: ${{ secrets.FAKE_API_KEY }}
+        run: |
+          if [ -z "$FAKE_API_KEY" ]; then
+            echo "::error::FAKE_API_KEY is not configured in repo/org secrets"
+            exit 1
+          fi
+          echo "FAKE_API_KEY length: ${#FAKE_API_KEY}"
+
+      # --- Choose ONE of the “deploy” styles below (uncomment what you use) ---
+
+      # - name: Terraform plan/apply (example)
+      #   run: |
+      #     terraform -version
+      #     terraform init
+      #     terraform plan -out=tfplan
+      #     terraform apply -auto-approve tfplan
+
+      # - name: Docker build & push (example)
+      #   run: |
+      #     docker build -t $APP_NAME:${{ github.sha }} .
+      #     echo "(push to registry here)"
+
+      # - name: Kubernetes apply (example)
+      #   run: |
+      #     echo "kubectl apply -f k8s/"
+
+      # - name: Serverless deploy (example)
+      #   run: |
+      #     echo "sam deploy / serverless deploy / gcloud functions deploy"
+
+      # For now: no-op demo step so the job is green
+      - name: Demo deploy
+        run: echo "Deployment would happen here (Terraform/K8s/Serverless)."
