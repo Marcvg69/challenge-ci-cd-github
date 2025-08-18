@@ -14,7 +14,11 @@ def theme_for_env(env: str) -> dict:
     mapping = {
         "dev": {"title": "Dev Environment", "bg": "#e6ffed", "accent": "#1f8a36"},
         "qa": {"title": "QA Environment", "bg": "#fff9db", "accent": "#a37b00"},
-        "prod": {"title": "Production Environment", "bg": "#ffe6e6", "accent": "#b00020"},
+        "prod": {
+            "title": "Production Environment",
+            "bg": "#ffe6e6",
+            "accent": "#b00020",
+        },
     }
     return mapping[env]
 

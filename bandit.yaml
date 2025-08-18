@@ -1,0 +1,12 @@
+# bandit.yaml
+skips: []
+exclude_dirs:
+  - .venv
+  - venv
+  - .git
+  - .github
+targets:
+  - app
+  - tests
+severity: LOW
+confidence: LOW
