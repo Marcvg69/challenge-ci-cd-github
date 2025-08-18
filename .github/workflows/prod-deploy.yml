@@ -29,7 +29,7 @@ jobs:
   deploy:
     # This is the protected environment; require approval in GitHub Settings
     environment:
-      name: production
+      name: prod
       # Optional: add a public URL once you actually host somewhere
       url: https://example.com
     runs-on: ubuntu-latest

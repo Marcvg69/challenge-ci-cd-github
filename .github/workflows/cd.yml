@@ -2,14 +2,24 @@ name: CD
 
 on:
   push:
-    branches: [ dev, qa, main ]   # deploy per branch (must-have)
-  workflow_dispatch: {}
+    branches: [ dev, qa, main ]     # auto-deploy by branch (as you have)
+  workflow_dispatch:                 # manual “Run workflow” button
+    inputs:
+      env:
+        description: "Which environment to deploy?"
+        type: choice
+        options: [dev, qa, prod]
+        required: true
+        default: dev
 
 jobs:
   deploy-dev:
-    if: github.ref == 'refs/heads/dev'
+    # run if push to dev OR manual dispatch choosing dev
+    if: |
+      github.ref == 'refs/heads/dev' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.env == 'dev')
     runs-on: ubuntu-latest
-    environment: dev              # GitHub Environment: dev
+    environment: dev
     steps:
       - uses: actions/checkout@v4
       - name: Set APP_ENV
@@ -19,8 +29,7 @@ jobs:
           python -m pip install -U pip
           pip install -r requirements.txt
       - name: Package build (simulated)
-        run: |
-          echo "Dev build at $(date -u)" > build.txt
+        run: echo "Dev build at $(date -u)" > build.txt
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -30,9 +39,12 @@ jobs:
         run: echo "🚀 Deployed to 'dev'"
 
   deploy-qa:
-    if: github.ref == 'refs/heads/qa'
+    # run if push to qa OR manual dispatch choosing qa
+    if: |
+      github.ref == 'refs/heads/qa' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.env == 'qa')
     runs-on: ubuntu-latest
-    environment: qa               # GitHub Environment: qa
+    environment: qa
     steps:
       - uses: actions/checkout@v4
       - name: Set APP_ENV
@@ -42,8 +54,7 @@ jobs:
           python -m pip install -U pip
           pip install -r requirements.txt
       - name: Package build (simulated)
-        run: |
-          echo "QA build at $(date -u)" > build.txt
+        run: echo "QA build at $(date -u)" > build.txt
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -53,9 +64,12 @@ jobs:
         run: echo "🚀 Deployed to 'qa'"
 
   deploy-prod:
-    if: github.ref == 'refs/heads/main'
+    # run if push to main OR manual dispatch choosing prod
+    if: |
+      github.ref == 'refs/heads/main' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.env == 'prod')
     runs-on: ubuntu-latest
-    environment: prod             # Require approval in repo Settings → Environments
+    environment: prod              # keep this exactly the same as the Environment name in repo Settings
     steps:
       - uses: actions/checkout@v4
       - name: Set APP_ENV
@@ -65,8 +79,7 @@ jobs:
           python -m pip install -U pip
           pip install -r requirements.txt
       - name: Package build (simulated)
-        run: |
-          echo "Prod build at $(date -u)" > build.txt
+        run: echo "Prod build at $(date -u)" > build.txt
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
