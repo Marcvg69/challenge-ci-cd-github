@@ -1,20 +1,23 @@
 import os
 import streamlit as st
 
+
 # ---- small helpers (unit-testable) ----
 def normalize_env(value: str | None) -> str:
     v = (value or "").strip().lower()
     return v if v in {"dev", "qa", "prod"} else "dev"
 
+
 def theme_for_env(env: str) -> dict:
     """Return title and CSS color per environment."""
     env = normalize_env(env)
     mapping = {
-        "dev":  {"title": "Dev Environment",         "bg": "#e6ffed", "accent": "#1f8a36"},
-        "qa":   {"title": "QA Environment",          "bg": "#fff9db", "accent": "#a37b00"},
-        "prod": {"title": "Production Environment",  "bg": "#ffe6e6", "accent": "#b00020"},
+        "dev": {"title": "Dev Environment", "bg": "#e6ffed", "accent": "#1f8a36"},
+        "qa": {"title": "QA Environment", "bg": "#fff9db", "accent": "#a37b00"},
+        "prod": {"title": "Production Environment", "bg": "#ffe6e6", "accent": "#b00020"},
     }
     return mapping[env]
+
 
 # ---- app ----
 APP_ENV = normalize_env(os.getenv("APP_ENV"))
