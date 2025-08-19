@@ -1,18 +1,218 @@
-# Challenge: CI/CD with GitHub Actions
+# Challenge: CI/CD with GitHub Actions  
+**Author:** Marc Van Goolen (solo project)
 
-A tiny Streamlit app + tests + GitHub Actions that simulate Dev → QA → Prod deployments.
+A tiny Streamlit app with unit tests and a full CI/CD pipeline that simulates **Dev → QA → Prod** using GitHub Actions, Environments, and approvals.
 
-## What’s inside
-- `app/main.py` — Streamlit app. Environment styles: Dev (green), QA (yellow), Prod (red).
-- `tests/test_app.py` — Unit tests.
-- `.github/workflows/ci.yml` — CI on PRs to **main** + daily schedule.
-- `.github/workflows/cd.yml` — CD on branch pushes: Dev (dev), QA (qa), Prod (main; requires approval).
-- `requirements.txt`, `pyproject.toml`, `.gitignore`.
+---
 
-## Local run
-```bash
-python -m venv .venv
-source .venv/bin/activate
+## 🎯 Goals
+
+- **CI** runs on pull requests to `main` (lint → security scan → tests + coverage → artifacts).
+- **CD** auto-deploys by branch:
+  - push to **`dev`** → deploy to **Dev**
+  - push to **`qa`** → deploy to **QA**
+  - push/merge to **`main`** → deploy to **Prod** (requires approval)
+- The app **looks different per environment** (title + background color).
+- Manual **Run workflow** (`workflow_dispatch`) is available for CD.
+
+---
+
+## 🧱 Tech Stack
+
+- Python 3.11+, Streamlit  
+- pytest, pytest-cov  
+- black, flake8, bandit  
+- GitHub Actions (separate **CI** and **CD** workflows)
+
+---
+
+## 📁 Repository Structure
+
+~~~
+challenge-ci-cd-github/
+├─ app/
+│  └─ main.py                # Streamlit app (env-aware UI)
+├─ tests/
+│  └─ test_app.py            # Unit tests for helpers in app/main.py
+├─ .github/
+│  └─ workflows/
+│     ├─ ci.yml              # PR → main: lint, test, artifacts
+│     └─ cd.yml              # Dev/QA/Prod deploys + manual trigger
+├─ .gitignore
+├─ requirements.txt
+├─ pyproject.toml
+└─ README.md
+~~~
+
+---
+
+## ⚙️ Local Environment Setup
+
+~~~bash
+# 1) clone
+git clone https://github.com/Marcvg69/challenge-ci-cd-github.git
+cd challenge-ci-cd-github
+
+# 2) venv
+python3 -m venv .venv
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
+
+# 3) dependencies
+python -m pip install -U pip
 pip install -r requirements.txt
-export APP_ENV=dev        # qa | prod
+~~~
+
+### Run the app locally
+
+~~~bash
+export APP_ENV=dev             # or: qa | prod
 streamlit run app/main.py
+~~~
+
+- **Dev** → title “Dev Environment”, **green** background  
+- **QA** → title “QA Environment”, **yellow** background  
+- **Prod** → title “Production Environment”, **red** background
+
+---
+
+## ✅ Local Quality Checks
+
+~~~bash
+# formatting
+black --check .
+
+# linting
+flake8 .
+
+# security (informational; CI does not fail on bandit)
+bandit -r app -x tests
+
+# tests + coverage
+pytest -q --cov=app --cov-report=term-missing
+~~~
+
+---
+
+## 🤖 CI: Continuous Integration
+
+**File:** `.github/workflows/ci.yml`
+
+**Triggers**
+- `pull_request` → `main` (required)
+- optional: daily schedule (07:00 UTC)
+- optional: manual **Run workflow** button
+
+**Steps**
+- `black --check .`
+- `flake8 .`
+- `bandit -r app -x tests` *(informational)*
+- `pytest` + coverage
+- Upload `coverage.xml` & `pytest-results.xml` as artifacts
+
+**How to trigger CI**
+- Open a PR: `feature/...` or `fix/...` → **main**
+- Or Actions → **CI** → *Run workflow* (if enabled)
+
+---
+
+## 🚀 CD: Continuous Delivery
+
+**File:** `.github/workflows/cd.yml`
+
+**Triggers**
+- `push` to `dev`, `qa`, or `main`
+- **Manual Run**: Actions → **CD** → *Run workflow* and choose `env` (`dev|qa|prod`)
+
+**Behavior**
+- `dev` → runs **deploy-dev**
+- `qa` → runs **deploy-qa**
+- `main` → runs **deploy-prod** (pauses on **prod** Environment for approval)
+
+Each job:
+- installs minimal deps
+- writes a small build artifact
+- **checks presence of demo secret** `FAKE_API_KEY` in logs
+- prints the required line: `🚀 Deployed to 'environment'`
+
+---
+
+## 🔐 GitHub Environments & Secrets
+
+1. **Create environments** (Repo → Settings → Environments):
+   - `dev`, `qa`, `prod` (names must match `cd.yml`)
+
+2. **Require approval for Prod**:
+   - In the **prod** environment, enable **Protection rules** → *Required reviewers* (add yourself or a coach)
+
+3. **Demo secret (optional)**:
+   - Repo → Settings → **Secrets and variables** → Actions  
+   - New secret: **`FAKE_API_KEY`** with any placeholder value  
+   - CD logs will show either  
+     `FAKE_API_KEY is configured (length: …)` **or** a warning if missing
+
+---
+
+## 🧵 Branch Strategy
+
+- Work on `feat/*` or `fix/*` branches and open **PRs to `main`** → triggers **CI**
+- Push to **`dev`** or **`qa`** to trigger **CD** to those environments
+- Merge to **`main`** to trigger **Prod**; approve the deployment in the Actions UI
+
+---
+
+## 📦 Requirements
+
+~~~
+streamlit==1.36.0
+pytest==8.3.3
+pytest-cov==5.0.0
+black==24.8.0
+flake8==7.1.1
+bandit==1.7.9
+~~~
+
+---
+
+## 🧪 What to Capture (add screenshots to `docs/` and embed below)
+
+- [ ] **CI on PR** (green checks) — `docs/ci-pr-green.png`  
+- [ ] **CI artifacts** panel — `docs/ci-artifacts.png`  
+- [ ] **CD: deploy-dev** log with “🚀 Deployed to 'dev'” — `docs/cd-dev.png`  
+- [ ] **CD: deploy-qa** log with “🚀 Deployed to 'qa'” — `docs/cd-qa.png`  
+- [ ] **CD: deploy-prod** awaiting approval — `docs/cd-prod-waiting.png`  
+- [ ] **CD: deploy-prod** after approval — `docs/cd-prod-green.png`  
+- [ ] **CD secret log** (`FAKE_API_KEY is configured…`) — `docs/cd-secret.png`  
+- [ ] **App UI** in Dev/QA/Prod — `docs/ui-dev.png`, `docs/ui-qa.png`, `docs/ui-prod.png`
+
+### 📸 Screenshots
+
+> Replace placeholders with your images when ready.
+
+~~~
+![CI PR](docs/ci-pr-green.png)
+![CI Artifacts](docs/ci-artifacts.png)
+![CD Dev](docs/cd-dev.png)
+![CD QA](docs/cd-qa.png)
+![CD Prod Waiting](docs/cd-prod-waiting.png)
+![CD Prod Approved](docs/cd-prod-green.png)
+![Secret Log](docs/cd-secret.png)
+
+![Dev UI](docs/ui-dev.png)
+![QA UI](docs/ui-qa.png)
+![Prod UI](docs/ui-prod.png)
+~~~
+
+---
+
+## 🆘 Troubleshooting
+
+- **Job skipped?** Ensure your branch matches the job condition or run CD manually with the `env` picker.  
+- **Prod stuck?** Approve it in **Actions → the run → Review deployments**.  
+- **Secret warning?** Add `FAKE_API_KEY` at repo or environment level.  
+- **Tests can’t import `app`?** Make sure `app/main.py` exists and tests import `app.main`.
+
+---
+
+## 📄 License
+
+MIT (or your choice)

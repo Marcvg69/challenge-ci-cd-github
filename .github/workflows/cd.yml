@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: [ dev, qa, main ]     # auto-deploy by branch (as you have)
+    branches: [ dev, qa, main ]     # auto-deploy by branch
   workflow_dispatch:                 # manual “Run workflow” button
     inputs:
       env:
@@ -28,6 +28,15 @@ jobs:
         run: |
           python -m pip install -U pip
           pip install -r requirements.txt
+      - name: Check secret presence (demo)
+        env:
+          FAKE_API_KEY: ${{ secrets.FAKE_API_KEY }}
+        run: |
+          if [ -n "$FAKE_API_KEY" ]; then
+            echo "FAKE_API_KEY is configured (length: ${#FAKE_API_KEY})"
+          else
+            echo "::warning::FAKE_API_KEY not configured for this environment"
+          fi
       - name: Package build (simulated)
         run: echo "Dev build at $(date -u)" > build.txt
       - name: Upload build artifact
@@ -53,6 +62,15 @@ jobs:
         run: |
           python -m pip install -U pip
           pip install -r requirements.txt
+      - name: Check secret presence (demo)
+        env:
+          FAKE_API_KEY: ${{ secrets.FAKE_API_KEY }}
+        run: |
+          if [ -n "$FAKE_API_KEY" ]; then
+            echo "FAKE_API_KEY is configured (length: ${#FAKE_API_KEY})"
+          else
+            echo "::warning::FAKE_API_KEY not configured for this environment"
+          fi
       - name: Package build (simulated)
         run: echo "QA build at $(date -u)" > build.txt
       - name: Upload build artifact
@@ -69,7 +87,7 @@ jobs:
       github.ref == 'refs/heads/main' ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.env == 'prod')
     runs-on: ubuntu-latest
-    environment: prod              # keep this exactly the same as the Environment name in repo Settings
+    environment: prod              # must match your Settings → Environments name
     steps:
       - uses: actions/checkout@v4
       - name: Set APP_ENV
@@ -78,6 +96,15 @@ jobs:
         run: |
           python -m pip install -U pip
           pip install -r requirements.txt
+      - name: Check secret presence (demo)
+        env:
+          FAKE_API_KEY: ${{ secrets.FAKE_API_KEY }}
+        run: |
+          if [ -n "$FAKE_API_KEY" ]; then
+            echo "FAKE_API_KEY is configured (length: ${#FAKE_API_KEY})"
+          else
+            echo "::warning::FAKE_API_KEY not configured for this environment"
+          fi
       - name: Package build (simulated)
         run: echo "Prod build at $(date -u)" > build.txt
       - name: Upload build artifact
