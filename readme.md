@@ -131,9 +131,14 @@ pytest -q --cov=app --cov-report=term-missing
     git add README2.md
     git commit -m "docs: update README2 (trigger CI)"
     git push -u origin docs/ci-proof
+![CI PR1](<docs/Screenshot 2025-08-19 at 15.37.44.png>)
+![CI PR2](<docs/Screenshot 2025-08-19 at 15.34.40.png>)
+![CI PR3](<docs/Screenshot 2025-08-19 at 15.37.44.png>)
+[CI PR4](docs/bandit-report.zip)
+[CI PR 5](docs/coverage-xml.zip)
 
-- Or Actions → **CI** → *Run workflow* (if enabled)
-
+- Or Actions → **CI** → *Run workflow* 
+![alt text](<docs/Screenshot 2025-08-19 at 15.47.42.png>)
 ---
 
 ## 🚀 CD: Continuous Delivery
@@ -146,8 +151,16 @@ pytest -q --cov=app --cov-report=term-missing
 
 **Behavior**
 - `dev` → runs **deploy-dev**
+
 - `qa` → runs **deploy-qa**
 - `main` → runs **deploy-prod** (pauses on **prod** Environment for approval)
+Example merge and push to prod README2.md
+![CD PROD1](<docs/Screenshot 2025-08-19 at 15.51.42.png>)
+![CD PROD2](<docs/Screenshot 2025-08-19 at 15.51.48.png>)
+![CD PROD3](<docs/Screenshot 2025-08-19 at 15.52.29.png>)
+![CD PROD4](<docs/Screenshot 2025-08-19 at 15.53.13.png>)
+![CD PROD5](<docs/Screenshot 2025-08-19 at 15.53.55.png>)
+
 
 Each job:
 - installs minimal deps
@@ -194,11 +207,8 @@ bandit==1.7.9
 
 ---
 
-## 🧪 What to Capture (add screenshots to `docs/` and embed below)
+## 🧪 Capture (add screenshots to `docs/` and embed below)
 
-- [ ] **CI on PR** (green checks) — `docs/ci-pr-green.png`  
-- [ ] 
-- [ ] **CI artifacts** panel — `docs/ci-artifacts.png`  
 - [ ] **CD: deploy-dev** log with “🚀 Deployed to 'dev'” — `docs/cd-dev.png`  
 - [ ] **CD: deploy-qa** log with “🚀 Deployed to 'qa'” — `docs/cd-qa.png`  
 - [ ] **CD: deploy-prod** awaiting approval — `docs/cd-prod-waiting.png`  
@@ -211,8 +221,7 @@ bandit==1.7.9
 > Replace placeholders with your images when ready.
 
 ~~~
-![CI PR](docs/ci-pr-green.png)
-![CI Artifacts](docs/ci-artifacts.png)
+
 ![CD Dev](docs/cd-dev.png)
 ![CD QA](docs/cd-qa.png)
 ![CD Prod Waiting](docs/cd-prod-waiting.png)
