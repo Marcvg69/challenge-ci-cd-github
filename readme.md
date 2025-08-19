@@ -151,8 +151,27 @@ pytest -q --cov=app --cov-report=term-missing
 
 **Behavior**
 - `dev` → runs **deploy-dev**
+CD: Deploy to Dev
+Goal: Prove branch-based CD. Only deploy-dev runs, and logs show:
+🚀 Deployed to 'dev'.
+git checkout -b dev
+echo "trigger dev $(date -u)" >> .trigger
+git add .trigger
+git commit -m "ci: trigger dev deploy"
+git push -u origin dev
+Actions → CD → open latest run.
+![alt text](<docs/Screenshot 2025-08-19 at 16.41.31.png>)
+![alt text](<docs/Screenshot 2025-08-19 at 16.41.37.png>)
+![alt text](<docs/Screenshot 2025-08-19 at 16.41.42.png>)
 
 - `qa` → runs **deploy-qa**
+git checkout -b qa
+echo "trigger qa $(date -u)" >> .trigger
+git add .trigger
+git commit -m "ci: trigger qa deploy"
+git push -u origin qa
+
+
 - `main` → runs **deploy-prod** (pauses on **prod** Environment for approval)
 Example merge and push to prod README2.md
 ![CD PROD1](<docs/Screenshot 2025-08-19 at 15.51.42.png>)
@@ -203,35 +222,6 @@ pytest-cov==5.0.0
 black==24.8.0
 flake8==7.1.1
 bandit==1.7.9
-~~~
-
----
-
-## 🧪 Capture (add screenshots to `docs/` and embed below)
-
-- [ ] **CD: deploy-dev** log with “🚀 Deployed to 'dev'” — `docs/cd-dev.png`  
-- [ ] **CD: deploy-qa** log with “🚀 Deployed to 'qa'” — `docs/cd-qa.png`  
-- [ ] **CD: deploy-prod** awaiting approval — `docs/cd-prod-waiting.png`  
-- [ ] **CD: deploy-prod** after approval — `docs/cd-prod-green.png`  
-- [ ] **CD secret log** (`FAKE_API_KEY is configured…`) — `docs/cd-secret.png`  
-- [ ] **App UI** in Dev/QA/Prod — `docs/ui-dev.png`, `docs/ui-qa.png`, `docs/ui-prod.png`
-
-### 📸 Screenshots
-
-> Replace placeholders with your images when ready.
-
-~~~
-
-![CD Dev](docs/cd-dev.png)
-![CD QA](docs/cd-qa.png)
-![CD Prod Waiting](docs/cd-prod-waiting.png)
-![CD Prod Approved](docs/cd-prod-green.png)
-![Secret Log](docs/cd-secret.png)
-
-![Dev UI](docs/ui-dev.png)
-![QA UI](docs/ui-qa.png)
-![Prod UI](docs/ui-prod.png)
-~~~
 
 ---
 
