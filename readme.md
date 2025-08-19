@@ -160,9 +160,9 @@ git add .trigger
 git commit -m "ci: trigger dev deploy"
 git push -u origin dev
 Actions → CD → open latest run.
-![alt text](<docs/Screenshot 2025-08-19 at 16.41.31.png>)
-![alt text](<docs/Screenshot 2025-08-19 at 16.41.37.png>)
-![alt text](<docs/Screenshot 2025-08-19 at 16.41.42.png>)
+![CD DEV1](<docs/Screenshot 2025-08-19 at 16.41.31.png>)
+![CD DEV2](<docs/Screenshot 2025-08-19 at 16.41.37.png>)
+![CD DEV3](<docs/Screenshot 2025-08-19 at 16.41.42.png>)
 
 - `qa` → runs **deploy-qa**
 git checkout -b qa
