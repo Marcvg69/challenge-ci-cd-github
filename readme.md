@@ -67,12 +67,26 @@ pip install -r requirements.txt
 ~~~bash
 export APP_ENV=dev             # or: qa | prod
 streamlit run app/main.py
+# Terminal 1 → DEV on port 8501
+APP_ENV=dev streamlit run app/main.py --server.port 8501 --server.headless true
+
+# Terminal 2 → QA on port 8502
+APP_ENV=qa  streamlit run app/main.py --server.port 8502 --server.headless true
+
+# Terminal 3 → PROD on port 8503
+APP_ENV=prod FAKE_API_KEY=abc123 \
+streamlit run app/main.py --server.port 8503 --server.headless true
+
 ~~~
 
 - **Dev** → title “Dev Environment”, **green** background  
-- **QA** → title “QA Environment”, **yellow** background  
-- **Prod** → title “Production Environment”, **red** background
+![Dev UI](<docs/Screenshot 2025-08-19 at 14.27.22.png>)
 
+- **QA** → title “QA Environment”, **yellow** background  
+![QA UI](<docs/Screenshot 2025-08-19 at 14.51.30.png>)
+
+- **Prod** → title “Production Environment”, **red** background and secrect present!
+![Prod UI](<docs/Screenshot 2025-08-19 at 15.07.25.png>)
 ---
 
 ## ✅ Local Quality Checks
@@ -111,6 +125,13 @@ pytest -q --cov=app --cov-report=term-missing
 
 **How to trigger CI**
 - Open a PR: `feature/...` or `fix/...` → **main**
+
+    git checkout -b docs/ci-proof
+    date >> README2.md               # small change to trigger PR
+    git add README2.md
+    git commit -m "docs: update README2 (trigger CI)"
+    git push -u origin docs/ci-proof
+
 - Or Actions → **CI** → *Run workflow* (if enabled)
 
 ---
@@ -176,6 +197,7 @@ bandit==1.7.9
 ## 🧪 What to Capture (add screenshots to `docs/` and embed below)
 
 - [ ] **CI on PR** (green checks) — `docs/ci-pr-green.png`  
+- [ ] 
 - [ ] **CI artifacts** panel — `docs/ci-artifacts.png`  
 - [ ] **CD: deploy-dev** log with “🚀 Deployed to 'dev'” — `docs/cd-dev.png`  
 - [ ] **CD: deploy-qa** log with “🚀 Deployed to 'qa'” — `docs/cd-qa.png`  

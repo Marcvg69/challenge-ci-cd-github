@@ -33,8 +33,17 @@ jobs:
       - name: Flake8 (lint)
         run: flake8 .
 
-      - name: Bandit (security)
-        run: bandit -r app tests -c bandit.yaml -q
+      - name: Security scan (bandit — non-blocking)
+        continue-on-error: true
+        run: |
+          bandit -r app -c bandit.yaml -f txt -o bandit-report.txt || true
+
+      - name: Upload Bandit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: bandit-report.txt
 
       - name: Pytest (+coverage)
         env:

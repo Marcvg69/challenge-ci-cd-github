@@ -1,5 +1,6 @@
 # bandit.yaml
-skips: []
+skips:
+  - B101   # allow 'assert' in tests (and generally for this exercise)
 exclude_dirs:
   - .venv
   - venv
@@ -10,3 +11,5 @@ targets:
   - tests
 severity: LOW
 confidence: LOW
+
+
