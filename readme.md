@@ -109,7 +109,6 @@ pytest -q --cov=app --cov-report=term-missing
 Intro... 46 workflow runs and learned a LOT of new github commands!
 ![GH Actions](<docs/Screenshot 2025-08-20 at 08.01.07.png>)
 
-
 ## 🤖 CI: Continuous Integration
 
 **File:** `.github/workflows/ci.yml`
