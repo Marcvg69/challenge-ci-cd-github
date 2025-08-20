@@ -138,7 +138,7 @@ pytest -q --cov=app --cov-report=term-missing
 [CI PR 5](docs/coverage-xml.zip)
 
 - Or Actions → **CI** → *Run workflow* 
-![alt text](<docs/Screenshot 2025-08-19 at 15.47.42.png>)
+![CI PR6](<docs/Screenshot 2025-08-19 at 15.47.42.png>)
 ---
 
 ## 🚀 CD: Continuous Delivery
@@ -170,7 +170,9 @@ echo "trigger qa $(date -u)" >> .trigger
 git add .trigger
 git commit -m "ci: trigger qa deploy"
 git push -u origin qa
-
+![CD QA1](<docs/Screenshot 2025-08-20 at 07.41.30.png>)
+![CD QA2](<docs/Screenshot 2025-08-20 at 07.41.42.png>)
+![CA QA3](<docs/Screenshot 2025-08-20 at 07.41.51.png>)
 
 - `main` → runs **deploy-prod** (pauses on **prod** Environment for approval)
 Example merge and push to prod README2.md
